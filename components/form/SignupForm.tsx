@@ -1,27 +1,69 @@
+import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useRouter } from "next/router";
+import { z, ZodError } from "zod";
+import { Data as ResponseData } from "../../pages/api/auth/signup";
+
+const SignupBody = z.object({
+  username: z
+    .string()
+    .trim()
+    .min(2, "Username must contain at least 2 characters"),
+  email: z.string().trim().email(),
+  password: z.string().min(8, "Password must contain at least 8 characters"),
+});
 
 export default function SignupForm() {
+  const router = useRouter();
+
   return (
     <Formik
       initialValues={{ username: "", email: "", password: "" }}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
+      validate={(values) => {
+        try {
+          SignupBody.parse(values);
+        } catch (e) {
+          if (e instanceof ZodError) {
+            return e.formErrors.fieldErrors;
+          }
+        }
+      }}
+      onSubmit={async (values, { setSubmitting, setStatus }) => {
+        setStatus(null);
+        try {
+          await axios.post<ResponseData>("/api/auth/signup", {
+            username: values.username,
+            email: values.email,
+            password: values.password,
+          });
           setSubmitting(false);
-        }, 400);
+          // return router.replace("/login");
+        } catch (e) {
+          if (axios.isAxiosError(e)) {
+            setStatus(e.response?.data.message);
+          }
+        }
       }}
     >
-      {({ isSubmitting }) => (
-        <Form className="flex flex-col gap-3 mb-3">
+      {({ isSubmitting, errors, status, touched }) => (
+        <Form className="flex flex-col gap-3 mb-3" noValidate>
           <div className="flex flex-col gap-1">
             <label htmlFor="username">Username</label>
             <Field
               id="username"
               type="text"
               name="username"
-              className="border p-1"
+              className={
+                touched.username && errors.username
+                  ? "border border-red-600 p-1"
+                  : "border p-1"
+              }
             />
-            <ErrorMessage name="email" component="div" />
+            <ErrorMessage
+              name="username"
+              component="div"
+              className="text-red-600 text-xs"
+            />
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="email">Email</label>
@@ -29,9 +71,17 @@ export default function SignupForm() {
               id="email"
               type="email"
               name="email"
-              className="border p-1"
+              className={
+                touched.email && errors.email
+                  ? "border border-red-600 p-1"
+                  : "border p-1"
+              }
             />
-            <ErrorMessage name="email" component="div" />
+            <ErrorMessage
+              name="email"
+              component="div"
+              className="text-red-600 text-xs"
+            />
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="password">Password</label>
@@ -39,9 +89,17 @@ export default function SignupForm() {
               id="password"
               type="password"
               name="password"
-              className="border p-1"
+              className={
+                touched.password && errors.password
+                  ? "border border-red-600 p-1"
+                  : "border p-1"
+              }
             />
-            <ErrorMessage name="password" component="div" />
+            <ErrorMessage
+              name="password"
+              component="div"
+              className="text-red-600 text-xs"
+            />
           </div>
           <button
             type="submit"
@@ -50,6 +108,7 @@ export default function SignupForm() {
           >
             Sign Up
           </button>
+          {status && <div className="text-red-600">{status}</div>}
         </Form>
       )}
     </Formik>

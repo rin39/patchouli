@@ -1,14 +1,17 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { signIn } from "next-auth/react";
 
 export default function SignupForm() {
   return (
     <Formik
       initialValues={{ email: "", password: "" }}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
+      onSubmit={async (values, { setSubmitting }) => {
+        const res = await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+        });
+        setSubmitting(false);
       }}
     >
       {({ isSubmitting }) => (
