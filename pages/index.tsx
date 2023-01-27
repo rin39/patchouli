@@ -1,7 +1,21 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import AppHead from "../components/util/AppHead";
 
 export default function Home() {
+  const session = useSession();
+  const router = useRouter();
+
+  if (session.status === "loading") {
+    return null;
+  }
+
+  if (session.status === "authenticated") {
+    router.replace("/dashboard");
+    return null;
+  }
+
   return (
     <>
       <AppHead />
