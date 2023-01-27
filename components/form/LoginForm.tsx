@@ -1,20 +1,29 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function SignupForm() {
+  const router = useRouter();
+
   return (
     <Formik
       initialValues={{ email: "", password: "" }}
-      onSubmit={async (values, { setSubmitting }) => {
+      onSubmit={async (values, { setSubmitting, setStatus }) => {
         const res = await signIn("credentials", {
           email: values.email,
           password: values.password,
           redirect: false,
         });
-        setSubmitting(false);
+
+        if (!res?.ok) {
+          setStatus(res?.error);
+          setSubmitting(false);
+        } else {
+          return router.replace("/dashboard");
+        }
       }}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, status }) => (
         <Form className="flex flex-col gap-3 mb-3">
           <div className="flex flex-col gap-1">
             <label htmlFor="email">Email</label>
@@ -43,6 +52,7 @@ export default function SignupForm() {
           >
             Log In
           </button>
+          {status && <div className="text-red-600 text-center">{status}</div>}
         </Form>
       )}
     </Formik>

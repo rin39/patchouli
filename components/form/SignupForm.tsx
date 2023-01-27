@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { z, ZodError } from "zod";
 import { Data as ResponseData } from "../../pages/api/auth/signup";
@@ -37,7 +38,12 @@ export default function SignupForm() {
             password: values.password,
           });
           setSubmitting(false);
-          // return router.replace("/login");
+          await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            redirect: false,
+          });
+          return router.replace("/dashboard");
         } catch (e) {
           if (axios.isAxiosError(e)) {
             setStatus(e.response?.data.message);
