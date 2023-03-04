@@ -1,6 +1,7 @@
 import clientPromise from "../lib/mongo";
-import { Db } from "mongodb";
-import { librarySchema, Library } from "../types/validation";
+import { Db, ObjectId } from "mongodb";
+import { Library } from "../types/common";
+import { LibrarySchema } from "../lib/validation";
 
 let database: Db;
 
@@ -23,8 +24,15 @@ export async function getLibraries(userId: string): Promise<Library[]> {
   }));
 }
 
+export async function getLibrary(id: string) {
+  const library = await database
+    .collection("libraries")
+    .findOne<Library>({ _id: new ObjectId(id) });
+  return library;
+}
+
 export async function createLibrary(requestBody: unknown, userId: string) {
-  const libraryEntryRaw = librarySchema.parse(requestBody);
+  const libraryEntryRaw = LibrarySchema.parse(requestBody);
   const libraryEntry = { ...libraryEntryRaw, userId };
   await database.collection("libraries").insertOne(libraryEntry);
 }
