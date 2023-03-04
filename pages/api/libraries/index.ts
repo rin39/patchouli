@@ -2,17 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 
-import clientPromise from "../../../lib/mongo";
-import { Db } from "mongodb";
 import { createLibrary } from "../../../services/libraries";
 import { ZodError } from "zod";
-
-let database: Db;
-
-(async () => {
-  const client = await clientPromise;
-  database = client.db();
-})();
 
 type Data = {
   message: string;
