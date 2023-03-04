@@ -1,7 +1,7 @@
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 import axios from "axios";
-import { librarySchema as formSchema } from "../../types/validation";
+import { LibrarySchema as FormSchema } from "../../lib/validation";
 
 type FormErrors = {
   name: string;
@@ -22,7 +22,7 @@ export default function NewLibraryForm() {
         };
 
         try {
-          formSchema.parse(values);
+          FormSchema.parse(values);
         } catch (e) {
           if (e instanceof ZodError) {
             for (let error of e.errors) {
