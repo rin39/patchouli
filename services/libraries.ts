@@ -28,6 +28,11 @@ export async function getLibrary(id: string) {
   const library = await database
     .collection("libraries")
     .findOne<Library>({ _id: new ObjectId(id) });
+
+  if (!library) {
+    throw new Error("Library with such id does not exist");
+  }
+
   return library;
 }
 

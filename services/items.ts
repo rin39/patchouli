@@ -18,10 +18,6 @@ export async function createItem(
 ) {
   const library = await getLibrary(libraryId);
 
-  if (!library) {
-    throw new Error("Library with such id does not exist");
-  }
-
   const validationObject = createItemValidationObject(library);
   const data = validationObject.parse(requestBody);
 
