@@ -31,7 +31,7 @@ export default function NewItemForm({ library, hideModal }: NewItemFormProps) {
         }
       }}
       onSubmit={async (values, { setSubmitting }) => {
-        await axios.post(`/api/libraries/${library._id}`, values);
+        await axios.post(`/api/libraries/${library._id}/items`, values);
         setSubmitting(false);
         queryClient.invalidateQueries({ queryKey: ["items", library._id] });
         hideModal();

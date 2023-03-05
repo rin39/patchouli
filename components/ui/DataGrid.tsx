@@ -20,7 +20,7 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
   const items = useQuery({
     queryKey: ["items", selectedLibrary?._id],
     queryFn: () => {
-      return axios.get(`/api/libraries/${selectedLibrary?._id}`);
+      return axios.get(`/api/libraries/${selectedLibrary?._id}/items`);
     },
   });
 
