@@ -32,7 +32,7 @@ export async function getLibrary(id: string) {
 }
 
 export async function createLibrary(requestBody: unknown, userId: string) {
-  const libraryEntryRaw = LibrarySchema.parse(requestBody);
-  const libraryEntry = { ...libraryEntryRaw, userId };
-  await database.collection("libraries").insertOne(libraryEntry);
+  const parsedLibrary = LibrarySchema.parse(requestBody);
+  const library = { ...parsedLibrary, userId };
+  await database.collection("libraries").insertOne(library);
 }

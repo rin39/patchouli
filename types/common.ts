@@ -8,6 +8,6 @@ export type Library = z.infer<typeof LibrarySchema> & {
 
 export type FieldType = z.infer<typeof FieldTypeEnum>;
 
-export type Entry = {
+export type Item = {
   [key: string]: string | number | boolean;
 };

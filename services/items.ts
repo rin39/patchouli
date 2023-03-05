@@ -1,8 +1,8 @@
 import clientPromise from "../lib/mongo";
 import { Db } from "mongodb";
 import { getLibrary } from "./libraries";
-import { Entry } from "../types/common";
-import { createEntryValidationObject } from "../lib/validation";
+import { Item } from "../types/common";
+import { createItemValidationObject } from "../lib/validation";
 
 let database: Db;
 
@@ -11,7 +11,7 @@ let database: Db;
   database = client.db();
 })();
 
-export async function createEntry(
+export async function createItem(
   requestBody: any,
   libraryId: string,
   userId: string
@@ -22,22 +22,22 @@ export async function createEntry(
     throw new Error("Library with such id does not exist");
   }
 
-  const validationObject = createEntryValidationObject(library);
+  const validationObject = createItemValidationObject(library);
   const data = validationObject.parse(requestBody);
 
-  const entry = { userId, libraryId, data };
+  const item = { userId, libraryId, data };
 
-  await database.collection("entries").insertOne(entry);
+  await database.collection("items").insertOne(item);
 }
 
-export async function getEntries(
+export async function getItems(
   libraryId: string,
   userId: string
-): Promise<Entry[]> {
-  const entries = await database
-    .collection("entries")
+): Promise<Item[]> {
+  const items = await database
+    .collection("items")
     .find({ libraryId, userId })
     .toArray();
 
-  return entries.map((entry) => entry.data);
+  return items.map((item) => item.data);
 }

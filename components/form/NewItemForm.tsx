@@ -2,15 +2,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { ZodError } from "zod";
-import { createEntryValidationObject } from "../../lib/validation";
-import { NewEntryModalProps } from "../ui/NewEntryModal";
+import { createItemValidationObject } from "../../lib/validation";
+import { NewItemModalProps } from "../ui/NewItemModal";
 
-type NewEntryFormProps = NewEntryModalProps;
+type NewItemFormProps = NewItemModalProps;
 
-export default function NewEntryForm({
-  library,
-  hideModal,
-}: NewEntryFormProps) {
+export default function NewItemForm({ library, hideModal }: NewItemFormProps) {
   const queryClient = useQueryClient();
 
   const initial = library.fields.reduce((a: { [x: string]: string }, c) => {
@@ -23,7 +20,7 @@ export default function NewEntryForm({
     <Formik
       initialValues={initial}
       validate={(values) => {
-        const validationObject = createEntryValidationObject(library);
+        const validationObject = createItemValidationObject(library);
 
         try {
           validationObject.parse(values);
@@ -36,7 +33,7 @@ export default function NewEntryForm({
       onSubmit={async (values, { setSubmitting }) => {
         await axios.post(`/api/libraries/${library._id}`, values);
         setSubmitting(false);
-        queryClient.invalidateQueries({ queryKey: ["entries", library._id] });
+        queryClient.invalidateQueries({ queryKey: ["items", library._id] });
         hideModal();
       }}
     >

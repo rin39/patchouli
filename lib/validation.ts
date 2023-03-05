@@ -20,7 +20,7 @@ export function createZodPrimitive(type: FieldType) {
   }
 }
 
-export function createEntryValidationObject(library: Library): AnyZodObject {
+export function createItemValidationObject(library: Library): AnyZodObject {
   const fields = library.fields.reduce(
     (a: { [x: string]: ZodTypeAny }, field) => {
       const fieldName = field.name;

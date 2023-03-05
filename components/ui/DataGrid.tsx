@@ -8,18 +8,17 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { Library } from "../../types/common";
-import NewEntryModal from "./NewEntryModal";
+import NewItemModal from "./NewItemModal";
 
 type DataGridProps = {
   selectedLibrary: Library;
 };
 
 export default function DataGrid({ selectedLibrary }: DataGridProps) {
-  const [isNewEntryModalDisplayed, setIsNewEntryModalDisplayed] =
-    useState(false);
+  const [isNewItemModalDisplayed, setIsNewItemModalDisplayed] = useState(false);
 
-  const entries = useQuery({
-    queryKey: ["entries", selectedLibrary?._id],
+  const items = useQuery({
+    queryKey: ["items", selectedLibrary?._id],
     queryFn: () => {
       return axios.get(`/api/libraries/${selectedLibrary?._id}`);
     },
@@ -34,20 +33,20 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
   });
 
   const table = useReactTable({
-    data: entries.data?.data.entries,
+    data: items.data?.data.items,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (entries.isLoading) return null;
+  if (items.isLoading) return null;
 
   return (
     <>
       <button
         className="bg-fuchsia-900 hover:bg-fuchsia-700 text-white p-0.5 rounded-md block text-center px-3 mb-2"
-        onClick={() => setIsNewEntryModalDisplayed(true)}
+        onClick={() => setIsNewItemModalDisplayed(true)}
       >
-        New Entry
+        New Item
       </button>
       <table>
         <thead>
@@ -78,9 +77,9 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
           ))}
         </tbody>
       </table>
-      {selectedLibrary && isNewEntryModalDisplayed && (
-        <NewEntryModal
-          hideModal={() => setIsNewEntryModalDisplayed(false)}
+      {selectedLibrary && isNewItemModalDisplayed && (
+        <NewItemModal
+          hideModal={() => setIsNewItemModalDisplayed(false)}
           library={selectedLibrary}
         />
       )}
