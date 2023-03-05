@@ -13,6 +13,11 @@ export default function Aside({
   selectedLibrary,
   setSelectedLibrary,
 }: AsideProps) {
+  const onLibraryClick = (library: Library) => {
+    setSelectedLibrary(library);
+    localStorage.setItem("dashboard.lastSelectedLibrary", library._id);
+  };
+
   return (
     <aside className="w-32">
       <ul>
@@ -25,7 +30,7 @@ export default function Aside({
           >
             <button
               className="w-full text-left"
-              onClick={() => setSelectedLibrary(library)}
+              onClick={() => onLibraryClick(library)}
             >
               {library.name}
             </button>

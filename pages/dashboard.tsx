@@ -1,9 +1,12 @@
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { GetServerSideProps } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth/next";
 import { useState } from "react";
 import Aside from "../components/ui/Aside";
 import DataGrid from "../components/ui/DataGrid";
 import Layout from "../components/ui/Layout";
+import useLocalStorage from "../hooks/useLocalStorage";
 import { getLibraries } from "../services/libraries";
 import { Library } from "../types/common";
 import { authOptions } from "./api/auth/[...nextauth]";
@@ -14,6 +17,17 @@ type DashboardProps = {
 
 export default function Dashboard({ libraries }: DashboardProps) {
   const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null);
+  const lastSelectedLibrary = useLocalStorage("dashboard.lastSelectedLibrary");
+
+  useQuery({
+    queryKey: ["lastSelectedLibrary"],
+    queryFn: () => {
+      return axios.get(`/api/libraries/${lastSelectedLibrary}`);
+    },
+    enabled: !!lastSelectedLibrary,
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => setSelectedLibrary(data.data.library),
+  });
 
   return (
     <Layout title="Dashboard">
