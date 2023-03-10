@@ -7,11 +7,15 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { useState } from "react";
-import { Library } from "../../types/common";
+import { Item, Library } from "../../types/common";
 import NewItemModal from "./NewItemModal";
 
 type DataGridProps = {
   selectedLibrary: Library;
+};
+
+type ApiResponseData = {
+  items: Item[];
 };
 
 export default function DataGrid({ selectedLibrary }: DataGridProps) {
@@ -19,12 +23,14 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
 
   const items = useQuery({
     queryKey: ["items", selectedLibrary?._id],
-    queryFn: () => {
-      return axios.get(`/api/libraries/${selectedLibrary?._id}/items`);
+    queryFn: async () => {
+      return axios
+        .get<ApiResponseData>(`/api/libraries/${selectedLibrary?._id}/items`)
+        .then((res) => res.data);
     },
   });
 
-  const columnHelper = createColumnHelper<any>();
+  const columnHelper = createColumnHelper<Item>();
   const fields = selectedLibrary.fields.map((field) => field.name);
   const columns = fields.map((field) => {
     return columnHelper.accessor(field, {
@@ -33,12 +39,10 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
   });
 
   const table = useReactTable({
-    data: items.data?.data.items,
+    data: items.data?.items ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
-  if (items.isLoading) return null;
 
   return (
     <>
@@ -48,35 +52,37 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
       >
         New Item
       </button>
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="text-left">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-y">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-1 pr-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {items.isSuccess && (
+        <table>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="text-left py-1 pr-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-y">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="py-1 pr-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       {selectedLibrary && isNewItemModalDisplayed && (
         <NewItemModal
           hideModal={() => setIsNewItemModalDisplayed(false)}

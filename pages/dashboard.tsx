@@ -5,6 +5,7 @@ import { unstable_getServerSession as getServerSession } from "next-auth/next";
 import { useState } from "react";
 import Aside from "../components/ui/Aside";
 import DataGrid from "../components/ui/DataGrid";
+import FetchingPlaceholder from "../components/ui/FetchingPlaceholder";
 import Layout from "../components/ui/Layout";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { getLibraries } from "../services/libraries";
@@ -19,7 +20,7 @@ export default function Dashboard({ libraries }: DashboardProps) {
   const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null);
   const lastSelectedLibrary = useLocalStorage("dashboard.lastSelectedLibrary");
 
-  useQuery({
+  const { fetchStatus } = useQuery({
     queryKey: ["lastSelectedLibrary"],
     queryFn: () => {
       return axios.get(`/api/libraries/${lastSelectedLibrary}`);
@@ -27,6 +28,7 @@ export default function Dashboard({ libraries }: DashboardProps) {
     enabled: !!lastSelectedLibrary,
     refetchOnWindowFocus: false,
     onSuccess: (data) => setSelectedLibrary(data.data.library),
+    onError: () => setSelectedLibrary(null),
   });
 
   return (
@@ -37,13 +39,21 @@ export default function Dashboard({ libraries }: DashboardProps) {
           selectedLibrary={selectedLibrary}
           setSelectedLibrary={setSelectedLibrary}
         />
-        <section className="grow">
-          {selectedLibrary ? (
-            <DataGrid selectedLibrary={selectedLibrary} />
-          ) : (
-            <div>No library selected</div>
-          )}
-        </section>
+        {lastSelectedLibrary !== undefined && (
+          <section className="grow">
+            {selectedLibrary ? (
+              <DataGrid selectedLibrary={selectedLibrary} />
+            ) : (
+              <>
+                {fetchStatus === "fetching" ? (
+                  <FetchingPlaceholder />
+                ) : (
+                  <div>No library selected</div>
+                )}
+              </>
+            )}
+          </section>
+        )}
       </div>
     </Layout>
   );
