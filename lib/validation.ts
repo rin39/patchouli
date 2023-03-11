@@ -35,13 +35,12 @@ export function createItemValidationObject(library: Library): AnyZodObject {
 }
 
 export const FieldTypeEnum = z.enum(["text", "number", "boolean", "date"]);
+export const FieldSchema = z.object({
+  name: z.string().min(1),
+  type: FieldTypeEnum,
+  required: z.boolean(),
+});
 export const LibrarySchema = z.object({
   name: z.string().min(1),
-  fields: z
-    .object({
-      name: z.string().min(1),
-      type: FieldTypeEnum,
-    })
-    .array()
-    .nonempty(),
+  fields: FieldSchema.array().nonempty(),
 });
