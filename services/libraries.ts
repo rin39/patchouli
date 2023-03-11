@@ -33,6 +33,8 @@ export async function getLibrary(id: string) {
     throw new Error("Library with such id does not exist");
   }
 
+  library._id = library._id.toString();
+
   return library;
 }
 

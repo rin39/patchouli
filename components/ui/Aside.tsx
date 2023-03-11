@@ -1,41 +1,59 @@
 import Link from "next/link";
-import { SetStateAction } from "react";
 import { Library } from "@/types/common";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/router";
 
-type AsideProps = {
+type ApiResponse = {
   libraries: Library[];
-  selectedLibrary: Library | null;
-  setSelectedLibrary: (value: SetStateAction<Library | null>) => void;
 };
 
-export default function Aside({
-  libraries,
-  selectedLibrary,
-  setSelectedLibrary,
-}: AsideProps) {
-  const onLibraryClick = (library: Library) => {
-    setSelectedLibrary(library);
-    localStorage.setItem("dashboard.lastSelectedLibrary", library._id);
-  };
+export default function Aside() {
+  const router = useRouter();
+  const isDashboard = router.pathname === "/dashboard";
+  const isLibrary = router.pathname === "/libraries/[id]";
+
+  const { data: libraries, isSuccess } = useQuery({
+    queryKey: ["libraries"],
+    queryFn: async () => {
+      return axios
+        .get<ApiResponse>("/api/libraries")
+        .then((res) => res.data.libraries);
+    },
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   return (
     <aside className="w-32">
       <ul>
-        {libraries.map((library) => (
-          <li
-            key={library._id}
-            className={`hover:text-fuchsia-700 mb-1 ${
-              selectedLibrary?._id === library._id && "text-fuchsia-900"
-            }`}
-          >
-            <button
-              className="w-full text-left"
-              onClick={() => onLibraryClick(library)}
+        <li
+          className={`hover:text-fuchsia-700 mb-1 ${
+            isDashboard && "text-fuchsia-900"
+          }`}
+        >
+          <Link href="/dashboard" className="inline-block w-full text-left">
+            Dashboard
+          </Link>
+        </li>
+        {isSuccess &&
+          libraries.map((library) => (
+            <li
+              key={library._id}
+              className={`hover:text-fuchsia-700 mb-1 ${
+                isLibrary &&
+                router.query.id === library._id &&
+                "text-fuchsia-900"
+              }`}
             >
-              {library.name}
-            </button>
-          </li>
-        ))}
+              <Link
+                href={`/libraries/${library._id}`}
+                className="inline-block w-full text-left"
+              >
+                {library.name}
+              </Link>
+            </li>
+          ))}
       </ul>
       <Link
         href="/libraries/new"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AppHead from "@/components/util/AppHead";
 import UserInfo from "@/components/ui/UserInfo";
+import Aside from "./Aside";
 
 type LayoutProps = {
   title?: string;
@@ -16,7 +17,12 @@ export default function Layout({ children, title }: LayoutProps) {
         </Link>
         <UserInfo />
       </header>
-      <main className="p-3">{children}</main>
+      <main className="p-3">
+        <div className="flex gap-5">
+          <Aside />
+          <section className="grow">{children}</section>
+        </div>
+      </main>
     </>
   );
 }
