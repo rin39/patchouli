@@ -1,5 +1,5 @@
-import NewLibraryForm from "../../../components/form/NewLibraryForm";
-import Layout from "../../../components/ui/Layout";
+import NewLibraryForm from "@/components/form/NewLibraryForm";
+import Layout from "@/components/ui/Layout";
 
 export default function NewLibraryPage() {
   return (

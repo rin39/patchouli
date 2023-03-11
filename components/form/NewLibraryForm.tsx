@@ -1,7 +1,7 @@
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import { ZodError } from "zod";
 import axios from "axios";
-import { LibrarySchema as FormSchema } from "../../lib/validation";
+import { LibrarySchema as FormSchema } from "@/lib/validation";
 
 type FormErrors = {
   name: string;

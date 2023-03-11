@@ -1,6 +1,6 @@
 import Link from "next/link";
-import AppHead from "../util/AppHead";
-import UserInfo from "./UserInfo";
+import AppHead from "@/components/util/AppHead";
+import UserInfo from "@/components/ui/UserInfo";
 
 type LayoutProps = {
   title?: string;

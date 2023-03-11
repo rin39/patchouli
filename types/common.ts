@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FieldTypeEnum, LibrarySchema } from "../lib/validation";
+import { FieldTypeEnum, LibrarySchema } from "@/lib/validation";
 
 export type Library = z.infer<typeof LibrarySchema> & {
   _id: string;

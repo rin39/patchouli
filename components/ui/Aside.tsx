@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SetStateAction } from "react";
-import { Library } from "../../types/common";
+import { Library } from "@/types/common";
 
 type AsideProps = {
   libraries: Library[];

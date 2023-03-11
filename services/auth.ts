@@ -1,4 +1,4 @@
-import clientPromise from "../lib/mongo";
+import clientPromise from "@/lib/mongo";
 import bcrypt from "bcrypt";
 import { Db } from "mongodb";
 import { z } from "zod";

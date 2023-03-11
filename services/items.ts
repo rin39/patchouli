@@ -1,8 +1,8 @@
-import clientPromise from "../lib/mongo";
+import clientPromise from "@/lib/mongo";
 import { Db } from "mongodb";
-import { getLibrary } from "./libraries";
-import { Item } from "../types/common";
-import { createItemValidationObject } from "../lib/validation";
+import { getLibrary } from "@/services/libraries";
+import { Item } from "@/types/common";
+import { createItemValidationObject } from "@/lib/validation";
 
 let database: Db;
 

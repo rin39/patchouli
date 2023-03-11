@@ -1,5 +1,5 @@
-import { Library } from "../../types/common";
-import NewItemForm from "../form/NewItemForm";
+import { Library } from "@/types/common";
+import NewItemForm from "@/components/form/NewItemForm";
 
 export type NewItemModalProps = {
   library: Library;

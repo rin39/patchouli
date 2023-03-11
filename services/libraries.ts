@@ -1,7 +1,7 @@
-import clientPromise from "../lib/mongo";
+import clientPromise from "@/lib/mongo";
 import { Db, ObjectId } from "mongodb";
-import { Library } from "../types/common";
-import { LibrarySchema } from "../lib/validation";
+import { Library } from "@/types/common";
+import { LibrarySchema } from "@/lib/validation";
 
 let database: Db;
 

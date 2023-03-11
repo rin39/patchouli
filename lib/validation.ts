@@ -1,4 +1,4 @@
-import { FieldType, Library } from "../types/common";
+import { FieldType, Library } from "@/types/common";
 import { AnyZodObject, z, ZodTypeAny } from "zod";
 
 export function createZodPrimitive(type: FieldType) {

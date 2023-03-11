@@ -3,14 +3,14 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth/next";
 import { useState } from "react";
-import Aside from "../components/ui/Aside";
-import DataGrid from "../components/ui/DataGrid";
-import FetchingPlaceholder from "../components/ui/FetchingPlaceholder";
-import Layout from "../components/ui/Layout";
-import useLocalStorage from "../hooks/useLocalStorage";
-import { getLibraries } from "../services/libraries";
-import { Library } from "../types/common";
-import { authOptions } from "./api/auth/[...nextauth]";
+import Aside from "@/components/ui/Aside";
+import DataGrid from "@/components/ui/DataGrid";
+import FetchingPlaceholder from "@/components/ui/FetchingPlaceholder";
+import Layout from "@/components/ui/Layout";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { getLibraries } from "@/services/libraries";
+import { Library } from "@/types/common";
+import { authOptions } from "@/api/auth/[...nextauth]";
 
 type DashboardProps = {
   libraries: Library[];

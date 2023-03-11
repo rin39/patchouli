@@ -7,8 +7,8 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { useState } from "react";
-import { Item, Library } from "../../types/common";
-import NewItemModal from "./NewItemModal";
+import { Item, Library } from "@/types/common";
+import NewItemModal from "@/components/ui/NewItemModal";
 
 type DataGridProps = {
   selectedLibrary: Library;

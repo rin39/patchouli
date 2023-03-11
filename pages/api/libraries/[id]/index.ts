@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth/next";
-import { getLibrary } from "../../../../services/libraries";
-import { Library } from "../../../../types/common";
-import { authOptions } from "../../auth/[...nextauth]";
+import { getLibrary } from "@/services/libraries";
+import { Library } from "@/types/common";
+import { authOptions } from "@/api/auth/[...nextauth]";
 
 type Data = {
   message?: string;

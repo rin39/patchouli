@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import AppHead from "../components/util/AppHead";
+import AppHead from "@/components/util/AppHead";
 
 export default function Home() {
   const session = useSession();

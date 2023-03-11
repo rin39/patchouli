@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "@/api/auth/[...nextauth]";
 
-import { createLibrary } from "../../../services/libraries";
+import { createLibrary } from "@/services/libraries";
 import { ZodError } from "zod";
 
 type Data = {

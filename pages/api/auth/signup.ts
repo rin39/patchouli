@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ZodError } from "zod";
-import { signup, UserAlreadyExistsError } from "../../../services/auth";
+import { signup, UserAlreadyExistsError } from "@/services/auth";
 
 export type Data = {
   message: string;

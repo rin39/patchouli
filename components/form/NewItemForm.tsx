@@ -2,8 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { ZodError } from "zod";
-import { createItemValidationObject } from "../../lib/validation";
-import { NewItemModalProps } from "../ui/NewItemModal";
+import { createItemValidationObject } from "@/lib/validation";
+import { NewItemModalProps } from "@/components/ui/NewItemModal";
 
 type NewItemFormProps = NewItemModalProps;
 

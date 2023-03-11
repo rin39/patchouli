@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { z, ZodError } from "zod";
-import { Data as ResponseData } from "../../pages/api/auth/signup";
+import { Data as ResponseData } from "@/pages/api/auth/signup";
 
 const SignupBody = z.object({
   username: z

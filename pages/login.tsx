@@ -1,6 +1,6 @@
 import Link from "next/link";
-import LoginForm from "../components/form/LoginForm";
-import AppHead from "../components/util/AppHead";
+import LoginForm from "@/components/form/LoginForm";
+import AppHead from "@/components/util/AppHead";
 
 export default function Login() {
   return (
