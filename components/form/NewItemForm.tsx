@@ -4,15 +4,20 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { ZodError } from "zod";
 import { createItemValidationObject } from "@/lib/validation";
 import { NewItemModalProps } from "@/components/ui/NewItemModal";
+import { removeEmptyObjectProperties } from "@/lib/util";
+import { Item } from "@/types/common";
 
 type NewItemFormProps = NewItemModalProps;
 
 export default function NewItemForm({ library, hideModal }: NewItemFormProps) {
   const queryClient = useQueryClient();
 
-  const initial = library.fields.reduce((a: { [x: string]: string }, c) => {
-    const field = c.name;
-    a[field] = "";
+  const initial = library.fields.reduce((a: Item, field) => {
+    if (field.type === "boolean") {
+      a[field.name] = false;
+    } else {
+      a[field.name] = "";
+    }
     return a;
   }, {});
 
@@ -21,9 +26,10 @@ export default function NewItemForm({ library, hideModal }: NewItemFormProps) {
       initialValues={initial}
       validate={(values) => {
         const validationObject = createItemValidationObject(library);
+        const newItem = removeEmptyObjectProperties(values);
 
         try {
-          validationObject.parse(values);
+          validationObject.parse(newItem);
         } catch (e) {
           if (e instanceof ZodError) {
             return e.formErrors.fieldErrors;
@@ -31,25 +37,36 @@ export default function NewItemForm({ library, hideModal }: NewItemFormProps) {
         }
       }}
       onSubmit={async (values, { setSubmitting }) => {
-        await axios.post(`/api/libraries/${library._id}/items`, values);
-        setSubmitting(false);
+        const newItem = removeEmptyObjectProperties(values);
+        await axios.post(`/api/libraries/${library._id}/items`, newItem);
+
         queryClient.invalidateQueries({ queryKey: ["items", library._id] });
+
+        setSubmitting(false);
         hideModal();
       }}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, touched }) => (
         <Form className="flex flex-col gap-3">
           {library.fields.map((field) => {
             return (
-              <div key={field.name} className="flex flex-col">
+              <div key={field.name} className="flex flex-col gap-1">
                 <label htmlFor={field.name}>{field.name}</label>
                 <Field
-                  type={field.type}
+                  type={field.type === "boolean" ? "checkbox" : field.type}
                   name={field.name}
                   id={field.name}
-                  className="bg-white p-1 h-9 border"
+                  className={
+                    touched[field.name] && errors[field.name]
+                      ? "border border-red-600 p-1"
+                      : "border p-1"
+                  }
                 />
-                <ErrorMessage name={field.name} component="div" />
+                <ErrorMessage
+                  name={field.name}
+                  className="text-red-600 text-xs"
+                  component="div"
+                />
               </div>
             );
           })}

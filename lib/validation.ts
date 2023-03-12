@@ -1,23 +1,33 @@
 import { FieldType, Library } from "@/types/common";
 import { AnyZodObject, z, ZodTypeAny } from "zod";
 
-export function createZodPrimitive(type: FieldType) {
+export function createZodPrimitive(type: FieldType, isRequired: boolean) {
+  let primitive;
+
   switch (type) {
     case "text":
-      return z.string();
+      primitive = z.string().min(1);
+      break;
 
     case "number":
-      return z.number();
+      primitive = z.number();
+      break;
 
     case "date":
-      return z.date();
+      primitive = z.coerce.date();
+      break;
 
     case "boolean":
-      return z.boolean();
+      primitive = z.boolean();
+      break;
 
     default:
       throw new Error("Unknown type");
   }
+
+  if (!isRequired) primitive = primitive.optional();
+
+  return primitive;
 }
 
 export function createItemValidationObject(library: Library): AnyZodObject {
@@ -25,7 +35,8 @@ export function createItemValidationObject(library: Library): AnyZodObject {
     (a: { [x: string]: ZodTypeAny }, field) => {
       const fieldName = field.name;
       const fieldType = field.type;
-      a[fieldName] = createZodPrimitive(fieldType);
+      const fieldRequired = field.required;
+      a[fieldName] = createZodPrimitive(fieldType, fieldRequired);
       return a;
     },
     {}
