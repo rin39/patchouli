@@ -9,6 +9,7 @@ import { Library } from "@/types/common";
 type Data = {
   message?: string;
   libraries?: Library[];
+  id?: string;
 };
 
 export default async function handler(
@@ -24,8 +25,8 @@ export default async function handler(
   switch (req.method) {
     case "POST":
       try {
-        await createLibrary(req.body, session.user.id);
-        return res.status(201).json({ message: "Created" });
+        const newLibraryId = await createLibrary(req.body, session.user.id);
+        return res.status(201).json({ message: "Created", id: newLibraryId });
       } catch (e) {
         if (e instanceof ZodError) {
           return res

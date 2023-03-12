@@ -41,5 +41,8 @@ export async function getLibrary(id: string) {
 export async function createLibrary(requestBody: unknown, userId: string) {
   const parsedLibrary = LibrarySchema.parse(requestBody);
   const library = { ...parsedLibrary, userId };
-  await database.collection("libraries").insertOne(library);
+  const { insertedId } = await database
+    .collection("libraries")
+    .insertOne(library);
+  return insertedId.toString();
 }
