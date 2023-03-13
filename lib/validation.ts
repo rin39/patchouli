@@ -47,11 +47,25 @@ export function createItemValidationObject(library: Library): AnyZodObject {
 
 export const FieldTypeEnum = z.enum(["text", "number", "boolean", "date"]);
 export const FieldSchema = z.object({
-  name: z.string().trim().min(1),
+  name: z.string().trim().min(1, "Field name should not be empty"),
   type: FieldTypeEnum,
   required: z.boolean(),
 });
 export const LibrarySchema = z.object({
-  name: z.string().trim().min(1),
-  fields: FieldSchema.array().nonempty(),
+  name: z.string().trim().min(1, "Library name should not be empty"),
+  fields: FieldSchema.array()
+    .nonempty("Library should have at least one field")
+    .refine((fields) => fields.some((field) => field.required), {
+      message: "At least one field should be required",
+    })
+    .refine(
+      (fields) => {
+        const fieldNamesArray = fields
+          .map((field) => field.name)
+          .filter((fieldName) => fieldName);
+        const fieldNamesSet = new Set(fieldNamesArray);
+        return fieldNamesArray.length === fieldNamesSet.size;
+      },
+      { message: "Field names should be unique" }
+    ),
 });

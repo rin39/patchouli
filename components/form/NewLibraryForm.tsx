@@ -7,11 +7,13 @@ import { useRouter } from "next/router";
 import { useQueryClient } from "@tanstack/react-query";
 
 type FormErrors = {
-  name: string;
-  fields: {
+  name?: string;
+  fields?: {
     name?: string;
     type?: string;
+    required?: string;
   }[];
+  fieldsArray?: string;
 };
 
 type ApiResponseData = {
@@ -33,13 +35,11 @@ export default function NewLibraryForm() {
     <Formik
       initialValues={{
         name: "",
-        fields: [{ ...emptyField }],
+        fields: [{ ...emptyField, required: true }],
       }}
       validate={(values) => {
-        const errors: FormErrors = {
-          name: "",
-          fields: [],
-        };
+        const errors: FormErrors = {};
+        errors.fields = [];
 
         try {
           FormSchema.parse(values);
@@ -47,20 +47,22 @@ export default function NewLibraryForm() {
           if (e instanceof ZodError) {
             for (let error of e.errors) {
               if (error.path[0] === "name") {
-                errors.name = "Required";
+                errors.name = error.message;
               } else if (error.path[0] === "fields") {
-                const index = error.path[1] as number;
-                errors.fields[index] = {
-                  name: "Field name is required",
-                };
+                if (typeof error.path[1] === "number") {
+                  const index = error.path[1];
+                  errors.fields[index] = {
+                    name: error.message,
+                  };
+                } else {
+                  errors.fieldsArray = error.message;
+                }
               }
             }
           }
         }
 
-        if (!errors.name && errors.fields.length === 0) {
-          return {};
-        }
+        if (!errors.fields.length) delete errors.fields;
 
         return errors;
       }}
@@ -158,13 +160,15 @@ export default function NewLibraryForm() {
                               Required Field
                             </label>
                           </div>
-                          <button
-                            type="button"
-                            className="underline underline-offset-3 text-red-900"
-                            onClick={() => remove(index)}
-                          >
-                            Delete Field
-                          </button>
+                          {values.fields.length > 1 && (
+                            <button
+                              type="button"
+                              className="underline underline-offset-3 text-red-900"
+                              onClick={() => remove(index)}
+                            >
+                              Delete Field
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -186,6 +190,11 @@ export default function NewLibraryForm() {
           >
             Create Library
           </button>
+          {(errors as FormErrors).fieldsArray && (
+            <div className="text-red-600 mt-2">
+              {(errors as FormErrors).fieldsArray}
+            </div>
+          )}
           {status && <div className="text-red-600 mt-2">{status}</div>}
         </Form>
       )}
