@@ -3,6 +3,7 @@ import { Db } from "mongodb";
 import { getLibrary } from "@/services/libraries";
 import { Item } from "@/types/common";
 import { createItemValidationObject } from "@/lib/validation";
+import { removeEmptyObjectProperties } from "@/lib/util";
 
 let database: Db;
 
@@ -17,9 +18,10 @@ export async function createItem(
   userId: string
 ) {
   const library = await getLibrary(libraryId);
-
   const validationObject = createItemValidationObject(library);
-  const data = validationObject.parse(requestBody);
+
+  const clearedRequestBody = removeEmptyObjectProperties(requestBody);
+  const data = validationObject.parse(clearedRequestBody);
 
   const item = { userId, libraryId, data };
 
