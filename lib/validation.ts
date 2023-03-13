@@ -6,7 +6,7 @@ export function createZodPrimitive(type: FieldType, isRequired: boolean) {
 
   switch (type) {
     case "text":
-      primitive = z.string().min(1);
+      primitive = z.string().trim().min(1);
       break;
 
     case "number":
@@ -47,11 +47,11 @@ export function createItemValidationObject(library: Library): AnyZodObject {
 
 export const FieldTypeEnum = z.enum(["text", "number", "boolean", "date"]);
 export const FieldSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().trim().min(1),
   type: FieldTypeEnum,
   required: z.boolean(),
 });
 export const LibrarySchema = z.object({
-  name: z.string().min(1),
+  name: z.string().trim().min(1),
   fields: FieldSchema.array().nonempty(),
 });
