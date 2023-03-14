@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   createColumnHelper,
   flexRender,
@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Item, Library } from "@/types/common";
 import NewItemModal from "@/components/ui/NewItemModal";
 
@@ -16,18 +16,33 @@ type DataGridProps = {
 
 type ApiResponseData = {
   items: Item[];
+  metadata: {
+    pages: number;
+    nextPage?: number;
+  };
 };
 
 export default function DataGrid({ selectedLibrary }: DataGridProps) {
   const [isNewItemModalDisplayed, setIsNewItemModalDisplayed] = useState(false);
 
-  const items = useQuery({
+  const {
+    data: items,
+    fetchNextPage,
+    isFetching,
+    isSuccess,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ["items", selectedLibrary?._id],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       return axios
-        .get<ApiResponseData>(`/api/libraries/${selectedLibrary?._id}/items`)
+        .get<ApiResponseData>(
+          `/api/libraries/${selectedLibrary?._id}/items?page=${pageParam}`
+        )
         .then((res) => res.data);
     },
+    getNextPageParam: (prevData) => prevData.metadata.nextPage,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 
   const columnHelper = createColumnHelper<Item>();
@@ -38,11 +53,30 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
     });
   });
 
+  const tableData = useMemo(() => {
+    return items?.pages.flatMap((data) => data.items) ?? [];
+  }, [items]);
+
   const table = useReactTable({
-    data: items.data?.items ?? [],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  useEffect(() => {
+    const fetchNextPageOnBottomReached = () => {
+      const distanceToBottom =
+        document.documentElement.scrollHeight -
+        document.documentElement.scrollTop -
+        document.documentElement.clientHeight;
+      if (distanceToBottom <= 500 && hasNextPage && !isFetching)
+        fetchNextPage();
+    };
+    document.addEventListener("scroll", fetchNextPageOnBottomReached);
+    return () => {
+      document.removeEventListener("scroll", fetchNextPageOnBottomReached);
+    };
+  }, [fetchNextPage, hasNextPage, isFetching]);
 
   return (
     <>
@@ -52,7 +86,7 @@ export default function DataGrid({ selectedLibrary }: DataGridProps) {
       >
         New Item
       </button>
-      {items.isSuccess && (
+      {isSuccess && (
         <table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
